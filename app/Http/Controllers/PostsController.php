@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -146,6 +147,7 @@ class PostsController extends Controller
         try{
             if (Auth::user()) {
                 $post = Post::where(['id' => $id], ['user_id', Auth::user()->id])->first();
+                Comment::where('post_id', $id)->delete();
 
                 if ($post->delete()){
                     $code = 201;
