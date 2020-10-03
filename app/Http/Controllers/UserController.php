@@ -2,10 +2,136 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 class UserController extends Controller
 {
+
+    public function register(Request $request)
+    {
+        //validate data
+        $this->validate($request, [
+            'name' => 'required|string|min:3|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed'
+        ]);
+
+//        Another way to get request
+//        $input = $request->only('name','email','password');
+
+        //register user
+        try {
+            $user = new User;
+//            $user->name = $input['name'];
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+            $password = $request->input('password');
+            $user->password = app('hash')->make($password); //this will create hash string
+
+            if ($user->save() ){
+                $code = 200;
+                $output = [
+                    'user' => $user,
+                    'code'=> $code,
+                    'message'=>"User created successfully."
+                ];
+            }else{
+                $code = 500;
+                $output = [
+                    'code'=> $code,
+                    'message'=>"An error occurred while creating user."
+                ];
+            }
+
+        }catch (Exception $e){
+//            dd($e->getMessage());
+            $code = 500;
+            $output = [
+                'code'=> $code,
+                'message'=>"An error ocurred while creating user."
+            ];
+        }
+
+        //return response
+        return response()->json($output, $code);
+
+    }
+
+    public function login(Request $request){
+
+        Config::set('jwt.user', 'App\Models\User');
+        Config::set('auth.providers.users.model', \App\Models\User::class);
+
+        //validate data
+        $this->validate($request, [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $input = $request->only('email','password');
+
+        if(! $authorized = Auth::attempt($input)){
+            $code = 401;
+            $output = [
+                'code'=> $code,
+                'message'=>"User is not authorized."
+            ];
+        } else {
+            $code = 201;
+            $token = $this->respondWithToken($authorized);
+            $output = [
+                'code'=> $code,
+                'message'=>"User logged in succesfully.",
+                'token' => $token
+            ];
+        }
+        return response()->json($output,$code);
+
+    }
+
+    /**
+     * Get the authenticated User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
+
+    /**
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout()
+    {
+        Auth::logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+
     /**
      * Display a listing of the resource.
      *

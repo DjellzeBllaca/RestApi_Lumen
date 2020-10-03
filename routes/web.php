@@ -16,3 +16,21 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix'=>'api'], function() use($router){
+
+    $router->group(['prefix'=>'user'], function() use($router){
+        $router->post('register','UserController@register');
+        $router->post('login','UserController@login');
+    });
+
+    $router->group(['prefix'=>'admin'], function() use($router){
+        $router->post('register','AdminController@register');
+        $router->post('login','AdminController@login');
+    });
+    
+    Route::post('me', 'UserController@me');
+    Route::post('logout', 'UserController@logout');
+    Route::post('refresh', 'UserController@refresh');
+
+});
