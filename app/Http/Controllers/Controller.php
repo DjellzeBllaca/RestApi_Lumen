@@ -21,4 +21,5 @@ class Controller extends BaseController
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
+
 }

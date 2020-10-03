@@ -22,6 +22,10 @@ $router->group(['prefix'=>'api'], function() use($router){
     $router->group(['prefix'=>'user'], function() use($router){
         $router->post('register','UserController@register');
         $router->post('login','UserController@login');
+        $router->post('post', 'PostsController@store');
+        $router->put('update/{id}', 'PostsController@update');
+        $router->put('delete/{id}', 'PostsController@destroy');
+
     });
 
     $router->group(['prefix'=>'admin'], function() use($router){

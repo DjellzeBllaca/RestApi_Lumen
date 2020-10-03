@@ -14,5 +14,5 @@ class UserDetails extends Model
     protected $fillable = [
         'address', 'phone', 'age','user_id'
     ];
-    
+
 }

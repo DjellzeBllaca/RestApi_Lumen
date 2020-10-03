@@ -93,6 +93,7 @@ class UserController extends Controller
                 'message'=>"User logged in succesfully.",
                 'token' => $token
             ];
+
         }
         return response()->json($output,$code);
 
