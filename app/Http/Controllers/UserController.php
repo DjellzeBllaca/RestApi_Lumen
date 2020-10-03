@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -16,7 +17,10 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required|string|min:3|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed'
+            'password' => 'required|confirmed',
+            'address' => 'required|string',
+            'phone' => 'required|string',
+            'age' => 'required|integer'
         ]);
 
 //        Another way to get request
@@ -31,20 +35,22 @@ class UserController extends Controller
             $password = $request->input('password');
             $user->password = app('hash')->make($password); //this will create hash string
 
-            if ($user->save() ){
-                $code = 200;
-                $output = [
-                    'user' => $user,
-                    'code'=> $code,
-                    'message'=>"User created successfully."
-                ];
-            }else{
-                $code = 500;
-                $output = [
-                    'code'=> $code,
-                    'message'=>"An error occurred while creating user."
-                ];
-            }
+            $user->save();
+
+            $user_details = new UserDetails;
+            $user_details->user_id = $user->id;
+            $user_details->phone = $request->input('phone');
+            $user_details->address = $request->input('address');
+            $user_details->age = $request->input('age');
+            $user_details->save();
+
+            $code = 200;
+            $output = [
+                'user' => $user,
+                'user_details' => $user_details,
+                'code'=> $code,
+                'message'=>"User created successfully."
+            ];
 
         }catch (Exception $e){
 //            dd($e->getMessage());

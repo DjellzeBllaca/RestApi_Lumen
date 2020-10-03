@@ -28,7 +28,7 @@ $router->group(['prefix'=>'api'], function() use($router){
         $router->post('register','AdminController@register');
         $router->post('login','AdminController@login');
     });
-    
+
     Route::post('me', 'UserController@me');
     Route::post('logout', 'UserController@logout');
     Route::post('refresh', 'UserController@refresh');
