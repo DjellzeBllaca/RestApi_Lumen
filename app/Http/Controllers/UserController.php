@@ -95,6 +95,8 @@ class UserController extends Controller
             ];
 
         }
+//        $currentUser = Auth::user();
+//        print_r($currentUser);exit;
         return response()->json($output,$code);
 
     }

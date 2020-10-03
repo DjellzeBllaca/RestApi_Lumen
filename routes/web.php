@@ -24,7 +24,8 @@ $router->group(['prefix'=>'api'], function() use($router){
         $router->post('login','UserController@login');
         $router->post('post', 'PostsController@store');
         $router->put('update/{id}', 'PostsController@update');
-        $router->put('delete/{id}', 'PostsController@destroy');
+        $router->delete('delete/{id}', 'PostsController@destroy');
+        $router->post('comment', 'CommentsController@create');
 
     });
 

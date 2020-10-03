@@ -142,21 +142,24 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        //user
+
         try{
             if (Auth::user()) {
-                $post = Post::where(['user_id' => Auth::user()->id, 'id' => $id])->first();
-                if ($post->delete()) {
+                $post = Post::where(['id' => $id], ['user_id', Auth::user()->id])->first();
+
+                if ($post->delete()){
                     $code = 201;
                     $output = [
                         'code'=> $code,
                         'message'=>"Post deleted successfully!"
                     ];
                 }
+                }
+            else{
                 $code = 409;
                 $output = [
                     'code'=> $code,
-                    'message'=>"Post failed to delete!"
+                    'message'=>"Post failed to delete!!"
                 ];
             }
 
